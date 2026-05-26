@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { X, Loader2, IndianRupee } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { X, Loader2 } from 'lucide-react'
 import { CATEGORIES } from '../../services/expenseService'
 import { format } from 'date-fns'
+import Modal from '../ui/Modal'
 
 export default function ExpenseModal({ open, onClose, onSubmit, initialData, loading, currency = '₹' }) {
   const titleRef = useRef(null)
@@ -47,101 +48,93 @@ export default function ExpenseModal({ open, onClose, onSubmit, initialData, loa
 
   const set = (k) => (v) => { setForm(f => ({ ...f, [k]: v })); setErrors(er => ({ ...er, [k]: '' })) }
 
+  const title = initialData ? 'Edit Expense' : 'New Expense'
+
   return (
-    <AnimatePresence>
-      {open && (
-        <>
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
-            onClick={onClose} />
+    <Modal open={open} onClose={onClose} ariaLabel={title}>
+      {/* Header — stays visible while body scrolls */}
+      <div className="flex items-center justify-between px-5 sm:px-6 pt-5 sm:pt-6 pb-4 border-b border-[var(--border)] flex-shrink-0">
+        <h2 className="text-lg font-bold text-primary">{title}</h2>
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close"
+          className="w-8 h-8 rounded-xl glass flex items-center justify-center text-muted hover:text-primary transition-colors"
+        >
+          <X size={16} />
+        </button>
+      </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 32, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 32, scale: 0.95 }}
-            transition={{ type: 'spring', damping: 24, stiffness: 300 }}
-            className="fixed inset-x-4 bottom-0 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2
-                       w-auto sm:w-full sm:max-w-md glass-strong rounded-t-3xl sm:rounded-3xl p-6 z-50 shadow-glass border border-[var(--border)]"
-          >
-            {/* Header */}
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-bold text-primary">{initialData ? 'Edit Expense' : 'New Expense'}</h2>
-              <button onClick={onClose} className="w-8 h-8 rounded-xl glass flex items-center justify-center text-muted hover:text-primary transition-colors">
-                <X size={16} />
-              </button>
+      <form onSubmit={handleSubmit} className="flex flex-col min-h-0 flex-1" noValidate>
+        <div className="overflow-y-auto overscroll-contain px-5 sm:px-6 py-4 space-y-4 flex-1">
+          {/* Title */}
+          <div>
+            <label className="label">Title</label>
+            <input ref={titleRef} type="text" placeholder="e.g. Lunch at cafe"
+              value={form.title} onChange={e => set('title')(e.target.value)}
+              className={`input ${errors.title ? 'border-red-500/60' : ''}`} />
+            {errors.title && <p className="text-xs text-red-400 mt-1">{errors.title}</p>}
+          </div>
+
+          {/* Amount */}
+          <div>
+            <label className="label">Amount ({currency})</label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted text-sm font-mono">{currency}</span>
+              <input type="number" step="0.01" min="0" placeholder="0.00"
+                value={form.amount} onChange={e => set('amount')(e.target.value)}
+                className={`input pl-8 font-mono ${errors.amount ? 'border-red-500/60' : ''}`} />
             </div>
+            {errors.amount && <p className="text-xs text-red-400 mt-1">{errors.amount}</p>}
+          </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-              {/* Title */}
-              <div>
-                <label className="label">Title</label>
-                <input ref={titleRef} type="text" placeholder="e.g. Lunch at cafe"
-                  value={form.title} onChange={e => set('title')(e.target.value)}
-                  className={`input ${errors.title ? 'border-red-500/60' : ''}`} />
-                {errors.title && <p className="text-xs text-red-400 mt-1">{errors.title}</p>}
-              </div>
+          {/* Category */}
+          <div>
+            <label className="label">Category</label>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              {CATEGORIES.map(cat => (
+                <button key={cat.id} type="button"
+                  onClick={() => set('category')(cat.id)}
+                  className={`px-2.5 sm:px-3 py-2.5 rounded-xl text-xs font-medium transition-all border flex items-center gap-1.5 min-w-0 ${
+                    form.category === cat.id
+                      ? 'border-brand-500/60 bg-brand-500/15 text-brand-400'
+                      : 'border-[var(--border)] glass text-secondary hover:border-brand-500/30'
+                  }`}
+                >
+                  <span className="flex-shrink-0">{cat.icon}</span>
+                  <span className="truncate">{cat.label.split(' ')[0]}</span>
+                </button>
+              ))}
+            </div>
+          </div>
 
-              {/* Amount */}
-              <div>
-                <label className="label">Amount ({currency})</label>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted text-sm font-mono">{currency}</span>
-                  <input type="number" step="0.01" min="0" placeholder="0.00"
-                    value={form.amount} onChange={e => set('amount')(e.target.value)}
-                    className={`input pl-8 font-mono ${errors.amount ? 'border-red-500/60' : ''}`} />
-                </div>
-                {errors.amount && <p className="text-xs text-red-400 mt-1">{errors.amount}</p>}
-              </div>
+          {/* Date */}
+          <div>
+            <label className="label">Date</label>
+            <input type="date" value={form.date} onChange={e => set('date')(e.target.value)}
+              max={format(new Date(), 'yyyy-MM-dd')}
+              className={`input ${errors.date ? 'border-red-500/60' : ''}`} />
+            {errors.date && <p className="text-xs text-red-400 mt-1">{errors.date}</p>}
+          </div>
 
-              {/* Category */}
-              <div>
-                <label className="label">Category</label>
-                <div className="grid grid-cols-3 gap-2">
-                  {CATEGORIES.map(cat => (
-                    <button key={cat.id} type="button"
-                      onClick={() => set('category')(cat.id)}
-                      className={`px-3 py-2.5 rounded-xl text-xs font-medium transition-all border flex items-center gap-1.5 ${
-                        form.category === cat.id
-                          ? 'border-brand-500/60 bg-brand-500/15 text-brand-400'
-                          : 'border-[var(--border)] glass text-secondary hover:border-brand-500/30'
-                      }`}
-                    >
-                      <span>{cat.icon}</span>
-                      <span className="truncate">{cat.label.split(' ')[0]}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
+          {/* Notes */}
+          <div>
+            <label className="label">Notes <span className="text-muted normal-case font-normal">(optional)</span></label>
+            <textarea placeholder="Add a note..." rows={2}
+              value={form.notes} onChange={e => set('notes')(e.target.value)}
+              className="input resize-none" />
+          </div>
+        </div>
 
-              {/* Date */}
-              <div>
-                <label className="label">Date</label>
-                <input type="date" value={form.date} onChange={e => set('date')(e.target.value)}
-                  max={format(new Date(), 'yyyy-MM-dd')}
-                  className={`input ${errors.date ? 'border-red-500/60' : ''}`} />
-                {errors.date && <p className="text-xs text-red-400 mt-1">{errors.date}</p>}
-              </div>
-
-              {/* Notes */}
-              <div>
-                <label className="label">Notes <span className="text-muted normal-case font-normal">(optional)</span></label>
-                <textarea placeholder="Add a note..." rows={2}
-                  value={form.notes} onChange={e => set('notes')(e.target.value)}
-                  className="input resize-none" />
-              </div>
-
-              {/* Actions */}
-              <div className="flex gap-3 pt-2">
-                <button type="button" onClick={onClose} className="btn-secondary flex-1 justify-center">Cancel</button>
-                <motion.button type="submit" disabled={loading} whileTap={{ scale: 0.97 }}
-                  className="btn-primary flex-1 justify-center">
-                  {loading ? <Loader2 size={16} className="animate-spin" /> : initialData ? 'Save Changes' : 'Add Expense'}
-                </motion.button>
-              </div>
-            </form>
-          </motion.div>
-        </>
-      )}
-    </AnimatePresence>
+        {/* Actions — pinned at bottom */}
+        <div className="flex gap-3 px-5 sm:px-6 py-4 border-t border-[var(--border)] flex-shrink-0 bg-[var(--bg-card)]/50">
+          <button type="button" onClick={onClose} className="btn-secondary flex-1 justify-center py-2.5 text-sm">Cancel</button>
+          <motion.button type="submit" disabled={loading} whileTap={{ scale: 0.97 }}
+            className="btn-primary flex-1 justify-center py-2.5 text-sm">
+            {loading ? <Loader2 size={16} className="animate-spin" /> : initialData ? 'Save Changes' : 'Add Expense'}
+          </motion.button>
+        </div>
+      </form>
+    </Modal>
   )
 }

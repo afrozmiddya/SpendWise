@@ -165,8 +165,14 @@ Deploy to Vercel, Netlify, or any static host.
 
 ## Common Issues
 
-**"relation expenses does not exist"** → Run `supabase_setup.sql` in SQL Editor
+**"relation expenses does not exist"** → Run `supabase_setup.sql` in SQL Editor (new projects only)
+
+**"Could not find the 'notes' / 'updated_at' column"** → Your DB was created before those columns existed. Run **`supabase_repair.sql`** in SQL Editor, then:
+
+```bash
+npm run db:check
+```
 
 **Auth not working** → Check `.env` values match your Supabase project
 
-**Avatar upload fails** → Make sure the storage bucket SQL ran successfully, or create an `avatars` bucket manually in Supabase Storage → Settings → Public bucket = ON
+**Avatar upload fails** → Run `supabase_repair.sql` (creates `avatars` bucket + policies), or create a public `avatars` bucket in Storage manually

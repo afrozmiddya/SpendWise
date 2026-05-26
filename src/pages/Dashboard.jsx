@@ -56,7 +56,7 @@ export default function Dashboard() {
       {/* Greeting */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-primary">Good {getGreeting()}, {displayName} 👋</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-primary">Good {getGreeting()}, {displayName} 👋</h1>
           <p className="text-secondary text-sm mt-1">{format(now, 'EEEE, dd MMMM yyyy')}</p>
         </div>
         <Link to="/app/expenses" className="btn-primary self-start sm:self-auto">

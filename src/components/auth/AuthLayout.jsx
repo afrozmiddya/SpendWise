@@ -5,7 +5,7 @@ import { Wallet } from 'lucide-react'
 
 export default function AuthLayout({ children, title, subtitle }) {
   return (
-    <div className="min-h-screen bg-primary flex items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen bg-primary flex items-center justify-center p-4 sm:p-6 relative overflow-hidden">
       <div className="ambient-blob w-96 h-96 bg-brand-500 -top-24 -left-24" style={{ opacity: 0.1 }} />
       <div className="ambient-blob w-64 h-64 bg-blue-500 bottom-0 right-0" style={{ opacity: 0.07 }} />
 
@@ -23,7 +23,7 @@ export default function AuthLayout({ children, title, subtitle }) {
           <span className="font-bold text-xl text-primary">SpendWise</span>
         </Link>
 
-        <div className="glass-strong rounded-3xl p-8 shadow-glass">
+        <div className="glass-strong rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-glass">
           <div className="text-center mb-8">
             <h1 className="text-2xl font-bold text-primary mb-2">{title}</h1>
             <p className="text-secondary text-sm">{subtitle}</p>

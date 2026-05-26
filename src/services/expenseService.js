@@ -16,6 +16,22 @@ export const CATEGORIES = [
 export const getCategoryById = (id) =>
   CATEGORIES.find(c => c.id === id) || CATEGORIES[CATEGORIES.length - 1]
 
+/** Only columns that exist on public.expenses — avoids Supabase schema cache errors */
+const EXPENSE_COLUMNS = ['title', 'amount', 'category', 'date', 'notes']
+
+function toExpenseRow(expense) {
+  const row = {}
+  for (const key of EXPENSE_COLUMNS) {
+    if (expense[key] === undefined) continue
+    if (key === 'notes') {
+      row.notes = expense.notes?.trim() ? expense.notes.trim() : null
+      continue
+    }
+    row[key] = expense[key]
+  }
+  return row
+}
+
 export const expenseService = {
   async getAll(userId, { startDate, endDate, category, search, sortBy = 'date', sortDir = 'desc' } = {}) {
     let query = supabase
@@ -37,7 +53,7 @@ export const expenseService = {
   async create(userId, expense) {
     const { data, error } = await supabase
       .from('expenses')
-      .insert({ ...expense, user_id: userId })
+      .insert({ ...toExpenseRow(expense), user_id: userId })
       .select()
       .single()
     if (error) throw error
@@ -47,7 +63,7 @@ export const expenseService = {
   async update(id, updates) {
     const { data, error } = await supabase
       .from('expenses')
-      .update({ ...updates, updated_at: new Date().toISOString() })
+      .update(toExpenseRow(updates))
       .eq('id', id)
       .select()
       .single()

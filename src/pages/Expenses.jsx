@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext'
 import { CATEGORIES, getCategoryById } from '../services/expenseService'
 import { formatCurrency, formatDate, exportToCSV } from '../utils/helpers'
 import ExpenseModal from '../components/expenses/ExpenseModal'
+import Modal from '../components/ui/Modal'
 import toast from 'react-hot-toast'
 
 export default function Expenses() {
@@ -59,22 +60,22 @@ export default function Expenses() {
     <div className="space-y-5 page-enter">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-primary">Expenses</h1>
-          <p className="text-sm text-muted mt-0.5">{filtered.length} entries · {formatCurrency(stats.total, currency)} total</p>
+        <div className="min-w-0">
+          <h1 className="text-xl sm:text-2xl font-bold text-primary">Expenses</h1>
+          <p className="text-sm text-muted mt-0.5 truncate">{filtered.length} entries · {formatCurrency(stats.total, currency)} total</p>
         </div>
-        <div className="flex gap-2">
-          <button onClick={() => exportToCSV(filtered)} className="btn-secondary text-sm py-2.5 px-4">
-            <Download size={15} /> Export CSV
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+          <button onClick={() => exportToCSV(filtered)} className="btn-secondary text-sm py-2.5 px-4 justify-center w-full sm:w-auto">
+            <Download size={15} /> <span className="sm:inline">Export CSV</span>
           </button>
-          <button onClick={openAdd} className="btn-primary text-sm py-2.5">
+          <button onClick={openAdd} className="btn-primary text-sm py-2.5 justify-center w-full sm:w-auto">
             <Plus size={15} /> Add Expense
           </button>
         </div>
       </div>
 
       {/* Filters */}
-      <div className="card !p-4 flex flex-col sm:flex-row gap-3">
+      <div className="card !p-4 flex flex-col sm:flex-row sm:flex-wrap gap-3">
         {/* Search */}
         <div className="relative flex-1">
           <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
@@ -103,10 +104,11 @@ export default function Expenses() {
         {/* Sort */}
         <button
           onClick={() => setSortDir(d => d === 'desc' ? 'asc' : 'desc')}
-          className="btn-secondary py-2.5 px-4 text-sm whitespace-nowrap"
+          className="btn-secondary py-2.5 px-4 text-sm whitespace-nowrap w-full sm:w-auto justify-center"
         >
           {sortDir === 'desc' ? <SortDesc size={15} /> : <SortAsc size={15} />}
-          {sortDir === 'desc' ? 'Newest first' : 'Oldest first'}
+          <span className="hidden min-[400px]:inline">{sortDir === 'desc' ? 'Newest first' : 'Oldest first'}</span>
+          <span className="min-[400px]:hidden">{sortDir === 'desc' ? 'Newest' : 'Oldest'}</span>
         </button>
       </div>
 
@@ -206,27 +208,18 @@ export default function Expenses() {
       />
 
       {/* Delete confirmation */}
-      <AnimatePresence>
-        {deleteConfirm && (
-          <>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40" onClick={() => setDeleteConfirm(null)} />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}
-              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 glass-strong rounded-2xl p-6 w-80 shadow-glass border border-[var(--border)]"
-            >
-              <h3 className="font-bold text-primary mb-2">Delete Expense?</h3>
-              <p className="text-sm text-secondary mb-5">This action cannot be undone.</p>
-              <div className="flex gap-3">
-                <button onClick={() => setDeleteConfirm(null)} className="btn-secondary flex-1 justify-center py-2.5 text-sm">Cancel</button>
-                <button onClick={() => handleDelete(deleteConfirm)} className="flex-1 py-2.5 rounded-xl bg-red-500/20 text-red-400 hover:bg-red-500/30 text-sm font-semibold transition-colors">
-                  Delete
-                </button>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+      <Modal open={!!deleteConfirm} onClose={() => setDeleteConfirm(null)} maxWidth="max-w-sm" ariaLabel="Delete expense">
+        <div className="p-5 sm:p-6">
+          <h3 className="font-bold text-primary mb-2">Delete Expense?</h3>
+          <p className="text-sm text-secondary mb-5">This action cannot be undone.</p>
+          <div className="flex flex-col-reverse sm:flex-row gap-3">
+            <button onClick={() => setDeleteConfirm(null)} className="btn-secondary flex-1 justify-center py-2.5 text-sm">Cancel</button>
+            <button onClick={() => handleDelete(deleteConfirm)} className="flex-1 py-2.5 rounded-xl bg-red-500/20 text-red-400 hover:bg-red-500/30 text-sm font-semibold transition-colors">
+              Delete
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   )
 }

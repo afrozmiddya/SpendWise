@@ -33,7 +33,7 @@ export default function StatCard({ icon: Icon, label, value, sub, trend, trendUp
         )}
       </div>
       <p className="text-muted text-xs font-semibold uppercase tracking-wider mb-1">{label}</p>
-      <p className="text-2xl font-bold text-primary font-mono">{value}</p>
+      <p className="text-lg sm:text-2xl font-bold text-primary font-mono truncate">{value}</p>
       {sub && <p className="text-xs text-muted mt-1">{sub}</p>}
     </motion.div>
   )

@@ -93,7 +93,7 @@ export default function Analytics() {
               <motion.div key={label} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.07 }}
                 className="card">
                 <p className="text-xs text-muted uppercase tracking-wider font-semibold mb-1">{label}</p>
-                <p className="text-lg font-bold text-primary">{value}</p>
+                <p className="text-base sm:text-lg font-bold text-primary truncate">{value}</p>
                 <p className="text-xs text-muted mt-0.5">{sub}</p>
               </motion.div>
             ))}

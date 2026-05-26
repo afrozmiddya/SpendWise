@@ -135,3 +135,9 @@ CREATE INDEX IF NOT EXISTS idx_expenses_user_id ON public.expenses(user_id);
 CREATE INDEX IF NOT EXISTS idx_expenses_date ON public.expenses(date DESC);
 CREATE INDEX IF NOT EXISTS idx_expenses_category ON public.expenses(category);
 CREATE INDEX IF NOT EXISTS idx_expenses_user_date ON public.expenses(user_id, date DESC);
+
+-- ============================================================
+-- EXISTING PROJECTS: if tables were created earlier, run instead:
+--   supabase_repair.sql
+-- Or verify with:  node scripts/check-supabase.mjs
+-- ============================================================

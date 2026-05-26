@@ -24,16 +24,20 @@ export default function Landing() {
       <div className="ambient-blob w-96 h-96 bg-blue-600 bottom-0 right-0" style={{ opacity: 0.05 }} />
 
       {/* Navbar */}
-      <nav className="relative z-10 flex items-center justify-between px-6 lg:px-16 py-5 border-b border-[var(--border)]">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-brand-500 to-brand-600 flex items-center justify-center shadow-glow">
+      <nav className="relative z-10 flex items-center justify-between px-4 sm:px-6 lg:px-16 py-4 sm:py-5 border-b border-[var(--border)] gap-3">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-brand-500 to-brand-600 flex items-center justify-center shadow-glow flex-shrink-0">
             <Wallet size={16} className="text-white" />
           </div>
-          <span className="font-bold text-lg text-primary">SpendWise</span>
+          <span className="font-bold text-lg text-primary truncate">SpendWise</span>
         </div>
-        <div className="flex items-center gap-3">
-          <Link to="/login" className="btn-ghost text-sm">Sign In</Link>
-          <Link to="/signup" className="btn-primary text-sm py-2 px-5">Get Started <ArrowRight size={15} /></Link>
+        <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+          <Link to="/login" className="btn-ghost text-sm px-2 sm:px-4">Sign In</Link>
+          <Link to="/signup" className="btn-primary text-sm py-2 px-3 sm:px-5">
+            <span className="hidden sm:inline">Get Started</span>
+            <span className="sm:hidden">Start</span>
+            <ArrowRight size={15} />
+          </Link>
         </div>
       </nav>
 

@@ -51,7 +51,7 @@ export default function AppLayout() {
   const pageTitle = NAV_ITEMS.find(n => location.pathname.startsWith(n.to))?.label || 'SpendWise'
 
   return (
-    <div className="min-h-screen bg-primary flex relative overflow-hidden">
+    <div className="h-[100dvh] bg-primary flex overflow-hidden relative">
       {/* Ambient blobs */}
       <div className="ambient-blob w-96 h-96 bg-brand-500 top-0 left-0" />
       <div className="ambient-blob w-64 h-64 bg-blue-500 bottom-0 right-0" />
@@ -68,19 +68,14 @@ export default function AppLayout() {
       </AnimatePresence>
 
       {/* Sidebar */}
-      <AnimatePresence>
-        {(sidebarOpen || true) && (
-          <motion.aside
-            initial={false}
-            animate={{ x: sidebarOpen || window.innerWidth >= 1024 ? 0 : -280 }}
-            className={`
-              fixed lg:sticky top-0 left-0 h-screen w-64 z-30 flex flex-col
-              glass-strong border-r border-[var(--border)]
-              ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-              transition-transform duration-300 lg:transition-none
-            `}
-            style={{ height: '100dvh' }}
-          >
+      <aside
+        className={`
+          fixed lg:relative inset-y-0 left-0 h-full w-64 z-30 flex flex-col flex-shrink-0
+          glass-strong border-r border-[var(--border)]
+          transition-transform duration-300 ease-out
+          ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+        `}
+      >
             {/* Logo */}
             <div className="p-6 border-b border-[var(--border)]">
               <div className="flex items-center gap-3">
@@ -123,14 +118,12 @@ export default function AppLayout() {
                 </div>
               </div>
             </div>
-          </motion.aside>
-        )}
-      </AnimatePresence>
+      </aside>
 
       {/* Main content */}
-      <div className="flex-1 flex flex-col min-w-0 lg:ml-0">
+      <div className="flex-1 flex flex-col min-w-0 min-h-0 w-full overflow-hidden">
         {/* Top navbar */}
-        <header className="sticky top-0 z-10 glass border-b border-[var(--border)] px-4 lg:px-6 py-3 flex items-center gap-4">
+        <header className="flex-shrink-0 z-10 glass border-b border-[var(--border)] px-4 lg:px-6 py-3 flex items-center gap-4">
           {/* Mobile menu button */}
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -211,15 +204,10 @@ export default function AppLayout() {
         </header>
 
         {/* Page content */}
-        <main className="flex-1 p-4 lg:p-6 overflow-y-auto">
-          <motion.div
-            key={location.pathname}
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-          >
+        <main className="flex-1 min-h-0 p-4 sm:p-5 lg:p-6 overflow-y-auto overflow-x-hidden">
+          <div key={location.pathname} className="page-enter">
             <Outlet />
-          </motion.div>
+          </div>
         </main>
       </div>
     </div>
